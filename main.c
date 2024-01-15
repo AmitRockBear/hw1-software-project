@@ -107,9 +107,34 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    for (int i = 0; i < k; i++) {
-        printf("Line %d: %f\n", i + 1, centroids[i][0]);
+    // for (int i = 0; i < k; i++) {
+    //     printf("Line %d: %f\n", i + 1, centroids[i][0]);
+    // }
+
+    for(int i=0; i<sizeof(vectors); i++) {
+      float min_distance = distance(vectors[0], centroids[0]);
+      for (int j=1; j<k; j++) {
+        float distance_from_centroid = distance(vectors[i], centroids[j]);
+        if (min_distance > distance_from_centroid) {
+          min_distance = distance_from_centroid;
+        }
+      
+      
+      }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     for (int i = 0; i < line_count; i++) {
         free(vectors[i]);
