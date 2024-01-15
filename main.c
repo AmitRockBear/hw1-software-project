@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define eps 0.001
+#define eps 0.0001
+#define MAX_LINE_LENGTH 1024
 
-// int main(int k, int iter, char* args[]) {
 int main(int argc, char* argv[]) {
     if (argc != 3) {
       return 1;
@@ -14,38 +14,58 @@ int main(int argc, char* argv[]) {
   	if (iter <= 1 || iter >= 1000) {
       printf("Invalid maximum iteration!");
     }
-    printf("[i]");
-  	
-    size_t bufferSize = 0;
-    ssize_t bytesRead;
-  	char **lines = NULL; 
+
+    char *arrayOfStrings[1];
     int counter = 0;
-  	int maxBufferSize = 0;
-    // Read input from stdin (standard input) using getline
-    while (fgets(lines[counter], 25, stdin) != NULL) // when deploying to the nove check if the 0 should be -1
-    {
-      counter++;
+
+    FILE *fp = stdin;
+    char line[MAX_LINE_LENGTH];
+    char **text = NULL;
+    int capacity = 0;
+    int line_count = 0;
+
+    if (fp == NULL) {
+      perror("Error opening input");
+      exit(1);
     }
-		
+
+
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        line[strcspn(line, "\n")] = '\0';
+
+         if (line_count == capacity) {
+            capacity += 50;
+            text = realloc(text, capacity * sizeof(char *));
+            if (text == NULL) {
+                fprintf(stderr, "Memory allocation failed\n");
+                exit(1);
+            }
+        }
+        
+        text[line_count] = malloc(strlen(line) + 1);
+        if (text[line_count] == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+        }
+        strcpy(text[line_count], line);
+
+        line_count++;
+    }
+
     if (k <=1 || k >= counter) {
       printf("Invalid number of clusters!");
     }
-    
-    for (int i=0;i<counter;i++) 
-      printf(lines[i]);
 
+    for (int i = 0; i < line_count; i++) {
+        printf("Line %d: %s\n", i + 1, text[i]);
+    }
+
+    for (int i = 0; i < line_count; i++) {
+        free(text[i]);
+    }
+    free(text);
+
+    fclose(fp);
     return 0;
 }
-
-// N = 2
-// K = ?
-// d = 3
-
-// 8.1402,-5.8022,-7.2376
-// 10.1626,-7.4824,-6.5774
-
-
-
-
-
 
