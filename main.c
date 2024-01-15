@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #define eps 0.0001
 #define MAX_LINE_LENGTH 1024
 
@@ -15,6 +16,16 @@ int countCommas(const char *str) {
     }
 
     return count;
+}
+
+float distance(float* vec1, float* vec2) {
+  float sum = 0;
+  
+  for (int i=0; i<sizeof(vec1); i++) {
+    sum += pow(vec1[i]-vec2[i], 2);
+  }
+
+  return sqrt(sum);
 }
 
 int main(int argc, char* argv[]) {
