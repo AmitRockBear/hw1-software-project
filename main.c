@@ -4,6 +4,19 @@
 #define eps 0.0001
 #define MAX_LINE_LENGTH 1024
 
+int countCommas(const char *str) {
+    int count = 0;
+
+    while (*str) {
+        if (*str == ',') {
+            count++;
+        }
+        str++;
+    }
+
+    return count;
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 3) {
       return 1;
@@ -20,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     FILE *fp = stdin;
     char line[MAX_LINE_LENGTH];
-    char **text = NULL;
+    float **vectors = NULL;
     int capacity = 0;
     int line_count = 0;
 
@@ -35,19 +48,30 @@ int main(int argc, char* argv[]) {
 
          if (line_count == capacity) {
             capacity += 50;
-            text = realloc(text, capacity * sizeof(char *));
-            if (text == NULL) {
+            vectors = realloc(vectors, capacity * sizeof(float *));
+            if (vectors == NULL) {
                 fprintf(stderr, "Memory allocation failed\n");
                 exit(1);
             }
         }
         
-        text[line_count] = malloc(strlen(line) + 1);
-        if (text[line_count] == NULL) {
+        size_t d = countCommas(line) + 1;
+        vectors[line_count] = calloc(d, sizeof(float));
+        if (vectors[line_count] == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
         }
-        strcpy(text[line_count], line);
+
+        // Tokenize the input string using strtok
+        char *token = strtok(line, ",");
+
+        int tokensCounter = 0;        
+        while (token != NULL) {
+            vectors[line_count][tokensCounter] = strtof(token, NULL);
+            
+            token = strtok(NULL, ",");
+            tokensCounter++;
+        }
 
         line_count++;
     }
@@ -57,15 +81,23 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 0; i < line_count; i++) {
-        printf("Line %d: %s\n", i + 1, text[i]);
+        printf("Line %d: %f\n", i + 1, vectors[i][0]);
     }
 
     for (int i = 0; i < line_count; i++) {
-        free(text[i]);
+        free(vectors[i]);
     }
-    free(text);
+    free(vectors);
 
     fclose(fp);
     return 0;
+
+
+
+
+
+
+
+
 }
 
