@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
     FILE *fp = stdin;
     char line[MAX_LINE_LENGTH];
     float **vectors = NULL;
+    float **centroids = calloc((size_t)k, sizeof(float *));
     int capacity = 0;
     int line_count = 0;
 
@@ -42,11 +43,10 @@ int main(int argc, char* argv[]) {
       exit(1);
     }
 
-
     while (fgets(line, sizeof(line), fp) != NULL) {
         line[strcspn(line, "\n")] = '\0';
 
-         if (line_count == capacity) {
+        if (line_count == capacity) {
             capacity += 50;
             vectors = realloc(vectors, capacity * sizeof(float *));
             if (vectors == NULL) {
@@ -57,6 +57,8 @@ int main(int argc, char* argv[]) {
         
         size_t d = countCommas(line) + 1;
         vectors[line_count] = calloc(d, sizeof(float));
+        
+
         if (vectors[line_count] == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
@@ -80,8 +82,22 @@ int main(int argc, char* argv[]) {
       printf("Invalid number of clusters!");
     }
 
-    for (int i = 0; i < line_count; i++) {
-        printf("Line %d: %f\n", i + 1, vectors[i][0]);
+    // for (int i = 0; i < line_count; i++) {
+    //     printf("Line %d: %f\n", i + 1, vectors[i][0]);
+    // }
+    
+    // Deep copy centroids
+    for (int i=0; i<k; i++) {
+      size_t d = sizeof(vectors[i]);
+      centroids[i] = calloc(d, sizeof(float));
+      
+      for (int j=0; j<d; j++) {
+        centroids[i][j] = vectors[i][j];
+      }
+    }
+
+    for (int i = 0; i < k; i++) {
+        printf("Line %d: %f\n", i + 1, centroids[i][0]);
     }
 
     for (int i = 0; i < line_count; i++) {
@@ -91,10 +107,6 @@ int main(int argc, char* argv[]) {
 
     fclose(fp);
     return 0;
-
-
-
-
 
 
 
