@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 
     double max_distance = eps + 1; 
     int iter_couter = 0;
-    while (max_distance >= eps && iter_couter <= iter) {
+    while (max_distance >= eps && iter_couter < iter) {
       max_distance = 0;
       double **centroids_sum = (double**)calloc(K, sizeof(double *));
       double *counters = (double*)calloc(K, sizeof(double));
