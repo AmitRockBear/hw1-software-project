@@ -18,10 +18,10 @@ int countCommas(const char *str) {
     return count;
 }
 
-float distance(float* vec1, float* vec2) {
+float distance(float* vec1, float* vec2, int size) {
   float sum = 0;
   
-  for (int i=0; i<sizeof(vec1); i++) {
+  for (int i=0; i<size; i++) {
     sum += pow(vec1[i]-vec2[i], 2);
   }
 
@@ -114,9 +114,8 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    // for (int i = 0; i < k; i++) {
-    //     printf("Line %d: %f\n", i + 1, centroids[i][0]);
-    // }
+
+
     float max_distance = eps + 1; 
     int iter_couter = 0;
     while (max_distance >= eps && iter_couter <= iter) {
@@ -130,10 +129,10 @@ int main(int argc, char* argv[]) {
       }
 
       for(int i=0; i<N; i++) {
-        float min_distance = distance(vectors[i], centroids[0]);
+        float min_distance = distance(vectors[i], centroids[0], d);
         int min_j = 0;
         for (int j=0; j<K; j++) {
-          float distance_from_centroid = distance(vectors[i], centroids[j]);
+          float distance_from_centroid = distance(vectors[i], centroids[j], d);
           if (min_distance > distance_from_centroid) {
             min_distance = distance_from_centroid;
             min_j = j;
@@ -152,7 +151,7 @@ int main(int argc, char* argv[]) {
           for (int p=0; p<d; p++) {
             new_centroid_j[p] = centroids_sum[j][p] / counters[j];
           }
-          float centroids_distance = distance(centroids[j], new_centroid_j);
+          float centroids_distance = distance(centroids[j], new_centroid_j, d);
           // printf("centroids distance in itertaion %d is: %f \n", j, counters[j]);
           if (centroids_distance > max_distance) {
             max_distance = centroids_distance;
