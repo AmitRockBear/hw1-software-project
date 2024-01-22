@@ -45,6 +45,10 @@ int main(int argc, char* argv[]) {
   	if (iter <= 1 || iter >= 1000) {
       printf("Invalid maximum iteration!");
     }
+    
+    if (K <=1 || K >= N) {
+      printf("Invalid number of clusters!");
+    }
 
     FILE *fp = stdin;
     char line[MAX_LINE_LENGTH];
@@ -101,9 +105,6 @@ int main(int argc, char* argv[]) {
         line_count++;
     }
 
-    if (K <=1 || K >= N) {
-      printf("Invalid number of clusters!");
-    }
     
     // Deep copy centroids
     for (int i=0; i<K; i++) {
@@ -118,8 +119,7 @@ int main(int argc, char* argv[]) {
 
     double max_distance = eps + 1; 
     int iter_couter = 0;
-    while (max_distance >= eps && iter_couter <= iter) {
-      printf("%d \n", iter_couter);
+    while (max_distance >= eps && iter_couter < iter) {
       max_distance = 0;
       double **centroids_sum = (double**)calloc(K, sizeof(double *));
       double *counters = (double*)calloc(K, sizeof(double));
@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
         centroids_sum[j] = calloc(d, sizeof(double));
       }
 
-      for(int i=0; i<N; i++) {
+      for (int i=0; i<N; i++) {
         double min_distance = distance(vectors[i], centroids[0], d);
         int min_j = 0;
         for (int j=0; j<K; j++) {
@@ -172,8 +172,14 @@ int main(int argc, char* argv[]) {
       iter_couter++;
     }
 
-    for (int i = 0; i < K; i++) {
-        printf("Line %d: %.4f, %.4f, %.4f\n", i + 1, centroids[i][0], centroids[i][1], centroids[i][2]);
+    for (int i=0; i<K; i++) {
+        for (int j=0; j<d; j++) {
+          printf("%.4f",centroids[i][j]);
+          if (j != d-1)
+            printf(",");
+          else
+            printf("\n");
+        }
     }
 
     for (int i = 0; i < line_count; i++) {
