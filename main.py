@@ -2,20 +2,20 @@ from math import sqrt
 import sys
 eps = 0.0001
 
-def distance(vector1, vector2, d):
+def distance1(vector1, vector2, d):
     sum = 0
     for i in range(d):
-        sum+=((vector1[i]-vector2[i])**2)
+        sum+=(vector1[i]-vector2[i])**2
     return sqrt(sum)
 
 
 def main():
-    if(len(sys.argv) != 5 and len(sys.argv) != 6):
-        return 1    
-    K = int(sys.argv[1])
-    N = int(sys.argv[2])
-    d = int(sys.argv[3])
-    iter =  200 if len(sys.argv) == 4 else int(sys.argv[4])
+    #if(len(sys.argv) != 5 and len(sys.argv) != 6):
+        #return 1    
+    K = 3 # K = int(sys.argv[1])
+    N = 800 # int(sys.argv[2])
+    d = 3 # int(sys.argv[3])
+    iter = 600 # 200 if len(sys.argv) == 5 else int(sys.argv[4])
     if(iter <= 1 or iter >= 1000):
         print("Invalid maximum iteration!")
     if (K <= 1 or K >=N):
@@ -25,7 +25,7 @@ def main():
     vectors = []
     centroids = []
 
-    filePath = sys.argv[5] if len(sys.argv) == 6 else sys.argv[4]
+    filePath = "tests\input_1.txt" # sys.argv[5] if len(sys.argv) == 6 else sys.argv[4]
     with open(filePath, 'r') as fp:
         for line in fp:
             line = line.split(',')
@@ -38,31 +38,32 @@ def main():
     max_distance = eps + 1
     iter_counter = 0
 
-    while(max_distance >= eps and iter_counter <= iter):
+    while(max_distance >= eps and iter_counter < iter):
         max_distance = 0
+        centroids_sum = []
         centroids_sum = [[0 for _ in range(d)] for _ in range(K)]
         counters = [0 for _ in range(K)]
         for i in range(N):
-            min_distance = distance(vectors[i], centroids[0], d)
+            min_distance = distance1(vectors[i], centroids[0], d)
             min_j = 0
             for j in range(K):
-                distance_from_centroid = distance(vectors[i], centroids[j], d)
+                distance_from_centroid = distance1(vectors[i], centroids[j], d)
                 if min_distance > distance_from_centroid:
                     min_distance = distance_from_centroid
                     min_j = j
             counters[min_j]+=1
             for p in range(d):
                 centroids_sum[min_j][p]+= vectors[i][p]
-            for j in range(K):
-                if counters[j] != 0:
-                    new_centroid_j = [centroids_sum[j][p] / counters[j] for p in range(d)]
-                    centroids_distance = distance(centroids[j], new_centroid_j, d)
-                    max_distance = max(max_distance, centroids_distance)
-                    centroids[j] = new_centroid_j
-            iter_counter += 1
+        for j in range(K):
+            if counters[j] != 0:
+                new_centroid_j = [centroids_sum[j][p] / counters[j] for p in range(d)]
+                centroids_distance = distance1(centroids[j], new_centroid_j, d)
+                max_distance = max(max_distance, centroids_distance)
+                centroids[j] = new_centroid_j.copy()
+        iter_counter += 1
 
     for item in centroids:
-        print(','.join([str(num) for num in item]))
+        print(','.join([str(round(float(num), 4)) for num in item]))
 
             
 
@@ -71,8 +72,8 @@ def main():
             
 
             
+main()
 
 
-
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
