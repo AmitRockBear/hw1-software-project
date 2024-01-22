@@ -119,7 +119,6 @@ int main(int argc, char* argv[]) {
     double max_distance = eps + 1; 
     int iter_couter = 0;
     while (max_distance >= eps && iter_couter <= iter) {
-      printf("%d \n", iter_couter);
       max_distance = 0;
       double **centroids_sum = (double**)calloc(K, sizeof(double *));
       double *counters = (double*)calloc(K, sizeof(double));
@@ -172,8 +171,14 @@ int main(int argc, char* argv[]) {
       iter_couter++;
     }
 
-    for (int i = 0; i < K; i++) {
-        printf("Line %d: %.4f, %.4f, %.4f\n", i + 1, centroids[i][0], centroids[i][1], centroids[i][2]);
+    for (int i=0; i<K; i++) {
+        for (int j=0; j<d; j++) {
+          printf("%.4f",centroids[i][j]);
+          if (j != d-1)
+            printf(",");
+          else
+            printf("\n");
+        }
     }
 
     for (int i = 0; i < line_count; i++) {
