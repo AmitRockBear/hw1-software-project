@@ -18,8 +18,8 @@ int countCommas(const char *str) {
     return count;
 }
 
-float distance(float* vec1, float* vec2, int size) {
-  float sum = 0;
+double distance(double* vec1, double* vec2, int size) {
+  double sum = 0;
   
   for (int i=0; i<size; i++) {
     sum += pow(vec1[i]-vec2[i], 2);
@@ -49,13 +49,13 @@ int main(int argc, char* argv[]) {
     FILE *fp = stdin;
     char line[MAX_LINE_LENGTH];
 
-    float **vectors = (float**)calloc(N, sizeof(float *));
+    double **vectors = (double**)calloc(N, sizeof(double *));
     if (vectors == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
     }
     
-    float **centroids = calloc((size_t)K, sizeof(float *));
+    double **centroids = calloc((size_t)K, sizeof(double *));
     if (centroids == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
@@ -74,14 +74,14 @@ int main(int argc, char* argv[]) {
 
         // if (line_count == capacity) {
         //     capacity += 50;
-        //     vectors = realloc(vectors, capacity * sizeof(float *));
+        //     vectors = realloc(vectors, capacity * sizeof(double *));
         //     if (vectors == NULL) {
         //         fprintf(stderr, "Memory allocation failed\n");
         //         exit(1);
         //     }
         // }
         
-        vectors[line_count] = calloc(d, sizeof(float));
+        vectors[line_count] = calloc(d, sizeof(double));
 
         if (vectors[line_count] == NULL) {
             fprintf(stderr, "Memory allocation failed\n");
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
     
     // Deep copy centroids
     for (int i=0; i<K; i++) {
-      centroids[i] = calloc(d, sizeof(float));
+      centroids[i] = calloc(d, sizeof(double));
       
       for (int j=0; j<d; j++) {
         centroids[i][j] = vectors[i][j];
@@ -116,23 +116,23 @@ int main(int argc, char* argv[]) {
 
 
 
-    float max_distance = eps + 1; 
+    double max_distance = eps + 1; 
     int iter_couter = 0;
     while (max_distance >= eps && iter_couter <= iter) {
       printf("%d \n", iter_couter);
       max_distance = 0;
-      float **centroids_sum = (float**)calloc(K, sizeof(float *));
-      float *counters = (float*)calloc(K, sizeof(float));
+      double **centroids_sum = (double**)calloc(K, sizeof(double *));
+      double *counters = (double*)calloc(K, sizeof(double));
 
       for (int j=0; j<K; j++) {
-        centroids_sum[j] = calloc(d, sizeof(float));
+        centroids_sum[j] = calloc(d, sizeof(double));
       }
 
       for(int i=0; i<N; i++) {
-        float min_distance = distance(vectors[i], centroids[0], d);
+        double min_distance = distance(vectors[i], centroids[0], d);
         int min_j = 0;
         for (int j=0; j<K; j++) {
-          float distance_from_centroid = distance(vectors[i], centroids[j], d);
+          double distance_from_centroid = distance(vectors[i], centroids[j], d);
           if (min_distance > distance_from_centroid) {
             min_distance = distance_from_centroid;
             min_j = j;
@@ -147,11 +147,11 @@ int main(int argc, char* argv[]) {
 
       for (int j=0; j<K; j++) {
         if (counters[j] > 0) {
-          float* new_centroid_j = calloc(d, sizeof(float));
+          double* new_centroid_j = calloc(d, sizeof(double));
           for (int p=0; p<d; p++) {
             new_centroid_j[p] = centroids_sum[j][p] / counters[j];
           }
-          float centroids_distance = distance(centroids[j], new_centroid_j, d);
+          double centroids_distance = distance(centroids[j], new_centroid_j, d);
           // printf("centroids distance in itertaion %d is: %f \n", j, counters[j]);
           if (centroids_distance > max_distance) {
             max_distance = centroids_distance;
