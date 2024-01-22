@@ -29,11 +29,14 @@ float distance(float* vec1, float* vec2) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {
+  printf("Hello there");
+    if (argc != 4 && argc != 5) {
       return 1;
     }
-    int k = atoi(argv[1]);
-    int iter = atoi(argv[2]);
+    int K = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int d = atoi(argv[3]);
+    int iter = argc == 5 ? atoi(argv[4]) : 200;
 
   	if (iter <= 1 || iter >= 1000) {
       printf("Invalid maximum iteration!");
@@ -44,9 +47,20 @@ int main(int argc, char* argv[]) {
 
     FILE *fp = stdin;
     char line[MAX_LINE_LENGTH];
-    float **vectors = NULL;
-    float **centroids = calloc((size_t)k, sizeof(float *));
-    int capacity = 0;
+
+    float **vectors = (float**)calloc(N, sizeof(float *));
+    if (vectors == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+    }
+    
+    float **centroids = calloc((size_t)K, sizeof(float *));
+    if (centroids == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+    }
+
+    // int capacity = 0;
     int line_count = 0;
 
     if (fp == NULL) {
@@ -57,16 +71,15 @@ int main(int argc, char* argv[]) {
     while (fgets(line, sizeof(line), fp) != NULL) {
         line[strcspn(line, "\n")] = '\0';
 
-        if (line_count == capacity) {
-            capacity += 50;
-            vectors = realloc(vectors, capacity * sizeof(float *));
-            if (vectors == NULL) {
-                fprintf(stderr, "Memory allocation failed\n");
-                exit(1);
-            }
-        }
+        // if (line_count == capacity) {
+        //     capacity += 50;
+        //     vectors = realloc(vectors, capacity * sizeof(float *));
+        //     if (vectors == NULL) {
+        //         fprintf(stderr, "Memory allocation failed\n");
+        //         exit(1);
+        //     }
+        // }
         
-        size_t d = countCommas(line) + 1;
         vectors[line_count] = calloc(d, sizeof(float));
         
 
@@ -89,16 +102,16 @@ int main(int argc, char* argv[]) {
         line_count++;
     }
 
-    if (k <=1 || k >= counter) {
+    if (K <=1 || K >= counter) {
       printf("Invalid number of clusters!");
     }
 
-    // for (int i = 0; i < line_count; i++) {
-    //     printf("Line %d: %f\n", i + 1, vectors[i][0]);
-    // }
+    for (int i = 0; i < line_count; i++) {
+        printf("Line %d: %f\n", i + 1, vectors[i][0]);
+    }
     
     // Deep copy centroids
-    for (int i=0; i<k; i++) {
+    for (int i=0; i<K; i++) {
       size_t d = sizeof(vectors[i]);
       centroids[i] = calloc(d, sizeof(float));
       
@@ -113,7 +126,7 @@ int main(int argc, char* argv[]) {
 
     for(int i=0; i<sizeof(vectors); i++) {
       float min_distance = distance(vectors[0], centroids[0]);
-      for (int j=1; j<k; j++) {
+      for (int j=1; j<K; j++) {
         float distance_from_centroid = distance(vectors[i], centroids[j]);
         if (min_distance > distance_from_centroid) {
           min_distance = distance_from_centroid;
