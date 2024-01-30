@@ -17,8 +17,8 @@ double calculate_distance(double* vec1, double* vec2, int size) {
 double** input_file_to_matrix(FILE* fp, int rows, int columns) {
   double** vectors = (double**)calloc(rows, sizeof(double *));
   if (vectors == NULL) {
-          fprintf(stderr, "Memory allocation failed\n");
-          exit(1);
+      printf("An Error Has Occurred");
+      exit(1);
   }
 
   int line_count = 0;
@@ -28,14 +28,12 @@ double** input_file_to_matrix(FILE* fp, int rows, int columns) {
       line[strcspn(line, "\n")] = '\0';
 
       vectors[line_count] = calloc(columns, sizeof(double));
-
       if (vectors[line_count] == NULL) {
-          fprintf(stderr, "Memory allocation failed\n");
-          exit(1);
+        printf("An Error Has Occurred");
+        exit(1);
       }
 
       char *token = strtok(line, ",");
-
       int tokensCounter = 0;        
       while (token != NULL) {
           vectors[line_count][tokensCounter] = strtod(token, NULL);
@@ -51,12 +49,17 @@ double** input_file_to_matrix(FILE* fp, int rows, int columns) {
 double** deep_copy_matrix(double** copied_matrix, int rows, int columns) {
   double** new_matrix = calloc((size_t)rows, sizeof(double *));
   if (new_matrix == NULL) {
-      fprintf(stderr, "Memory allocation failed\n");
+      printf("An Error Has Occurred");
       exit(1);
   }
 
   for (int i=0; i<rows; i++) {
       new_matrix[i] = calloc(columns, sizeof(double));
+      if (new_matrix[i] == NULL) {
+        printf("An Error Has Occurred");
+        exit(1);
+      }
+
       for (int j=0; j<columns; j++) {
         new_matrix[i][j] = copied_matrix[i][j];
       }
@@ -82,6 +85,10 @@ int find_closest_centroid_to_vector_index(double* vector, int vector_size, doubl
 
 double* create_new_centroid(double* centroid_sum, int centroid_counter, int centroid_size) {
   double* new_centroid = calloc(centroid_size, sizeof(double));
+  if (new_centroid == NULL) {
+      printf("An Error Has Occurred");
+      exit(1);
+  }
 
   for (int p=0; p<centroid_size; p++) {
     new_centroid[p] = centroid_sum[p] / centroid_counter;
@@ -96,10 +103,23 @@ void calculate_centroids_convergence(double** centroids, double** vectors, int c
   while (max_distance >= eps && iter_couter < max_iterations) {
     max_distance = 0;
     double **centroids_sum = (double**)calloc(centroids_num, sizeof(double *));
+    if (centroids_sum == NULL) {
+      printf("An Error Has Occurred");
+      exit(1);
+    }
     double *counters = (double*)calloc(centroids_num, sizeof(double));
+    if (counters == NULL) {
+      printf("An Error Has Occurred");
+      exit(1);
+    }
 
     for (int j=0; j<centroids_num; j++) {
       centroids_sum[j] = calloc(centroid_size, sizeof(double));
+
+      if (centroids_sum[j] == NULL) {
+        printf("An Error Has Occurred");
+        exit(1);
+      }
     }
 
     for (int i=0; i<vectors_num; i++) {
@@ -144,7 +164,8 @@ void print_output(double** centroids, int centroids_num, int centroid_size) {
 
 int main(int argc, char* argv[]) {
     if (argc != 4 && argc != 5) {
-      return 1;
+      printf("An Error Has Occurred");
+      exit(1);
     }
     int K = atoi(argv[1]);
     int N = atoi(argv[2]);
@@ -153,15 +174,27 @@ int main(int argc, char* argv[]) {
 
   	if (iter <= 1 || iter >= 1000) {
       printf("Invalid maximum iteration!");
+      exit(1);
     }
-    
+
+    if (N <= 1) {
+      printf("Invalid number of points!");
+      exit(1);
+    }
+
     if (K <=1 || K >= N) {
       printf("Invalid number of clusters!");
+      exit(1);
+    }
+
+    if (d < 1) {
+      printf("Invalid dimension of point!");
+      exit(1);
     }
 
     FILE *fp = stdin;
     if (fp == NULL) {
-      perror("Error opening input");
+      printf("An Error Has Occurred");
       exit(1);
     }
 
