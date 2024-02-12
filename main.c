@@ -24,7 +24,7 @@ double** input_file_to_matrix(FILE* fp, int rows, int columns) {
   int line_count = 0;
   char line[MAX_LINE_LENGTH];
 
-  while (fgets(line, sizeof(line), fp) != NULL && line_count < rows) {
+  while (getline(line, &sizeof(line), fp) != -1 && line_count < rows) {
       line[strcspn(line, "\n")] = '\0';
 
       vectors[line_count] = calloc(columns, sizeof(double));
