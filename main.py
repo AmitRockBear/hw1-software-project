@@ -1,6 +1,6 @@
 from math import sqrt
 import sys
-eps = 0.0001
+eps = 0.001
 
 
 def validate_params():
