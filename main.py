@@ -5,18 +5,33 @@ eps = 0.001
 
 def validate_params():
     if not (len(sys.argv) != 5 and len(sys.argv) != 6):
-        K = int(sys.argv[1])
-        N = int(sys.argv[2])
-        d = int(sys.argv[3])
+        try:
+            K = int(sys.argv[1])
+        except ValueError:
+            print("Invalid number of clusters!")
+            return
+        
+        try:
+            N = int(sys.argv[2])
+        except ValueError:
+            print("Invalid number of points!")
+            return
+
+        try:
+            d = int(sys.argv[3])
+        except ValueError:
+            print("Invalid dimension of point!")
+            return
+
         iter = 200 if len(sys.argv) == 5 else int(sys.argv[4])
-        if (not isinstance(N, int) or N <= 0):
+        if (not isinstance(N, int) or N <= 1):
             print("Invalid number of points!")
             return
         if (not isinstance(K, int) or K <= 1 or K >=N):
             print("Invalid number of clusters!")
             return
-        if (not isinstance(d, int)):
-            print( "Invalid dimension of point!")
+        if (not isinstance(d, int) or d < 1):
+            print("Invalid dimension of point!")
             return
         if (not isinstance(iter, int) or iter <= 1 or iter >= 1000):
             print("Invalid maximum iteration!")
@@ -81,7 +96,11 @@ def main(K, N, d, iter, filePath):
         print(','.join([str(round(float(num), 4)) for num in item]))
 
 if __name__ == "__main__":
-    result = validate_params()
-    if not result == None:
-        K, N, d, iter, filePath = result
-        main(K, N, d, iter, filePath)
+    # try:
+        result = validate_params()
+        if not result == None:
+            K, N, d, iter, filePath = result
+            main(K, N, d, iter, filePath)
+    # except ex:
+    #     print(ex)
+
