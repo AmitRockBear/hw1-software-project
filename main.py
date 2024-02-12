@@ -81,6 +81,7 @@ def main(K, N, d, iter, filePath):
         print(','.join([str(round(float(num), 4)) for num in item]))
 
 if __name__ == "__main__":
-    (K, N, d, iter, filePath) = validate_params()
-    if(K == None):
+    result = validate_params()
+    if not result == None:
+        K, N, d, iter, filePath = result
         main(K, N, d, iter, filePath)
