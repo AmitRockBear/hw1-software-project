@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define eps 0.0001
+#define eps 0.001
 #define MAX_LINE_LENGTH 1024
 
 double calculate_distance(double* vec1, double* vec2, int size) {
@@ -183,6 +183,18 @@ void print_output(double** centroids, int centroids_num, int centroid_size) {
   }
 }
 
+int isInteger(const char *str) {
+    if (*str == '\0')
+        return 0;
+
+    while (*str != '\0') {
+        if (!isdigit(*str))
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
 int main(int argc, char* argv[]) {
     int K, N, d, iter, i;
     double **vectors, **centroids;
@@ -193,26 +205,44 @@ int main(int argc, char* argv[]) {
       exit(1);
     }
 
-    K = atoi(argv[1]);
-    N = atoi(argv[2]);
-    d = atoi(argv[3]);
-    iter = argc == 5 ? atoi(argv[4]) : 200;
-
-  	if (iter <= 1 || iter >= 1000) {
-      printf("Invalid maximum iteration!");
-      exit(1);
+    iter = 200;
+    if (argc == 5) {
+      if (isInteger(argv[4]) == 0) {
+        printf("Invalid maximum iteration!");
+        exit(1);
+      }
+      iter = atoi(argv[4]);
+      if (iter <= 1 || iter >= 1000) {
+        printf("Invalid maximum iteration!");
+        exit(1);
+      }
     }
 
+    if (isInteger(argv[2]) == 0) {
+      printf("Invalid number of points!");
+      exit(1);
+    }
+    N = atoi(argv[2]);
     if (N <= 1) {
       printf("Invalid number of points!");
       exit(1);
     }
 
+    if (isInteger(argv[1]) == 0) {
+      printf("Invalid number of clusters!");
+      exit(1);
+    }
+    K = atoi(argv[1]);
     if (K <=1 || K >= N) {
       printf("Invalid number of clusters!");
       exit(1);
     }
 
+    if (isInteger(argv[3])) {
+      printf("Invalid dimension of point!");
+      exit(1);
+    }
+    d = atoi(argv[3]);
     if (d < 1) {
       printf("Invalid dimension of point!");
       exit(1);
