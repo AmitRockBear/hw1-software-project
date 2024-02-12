@@ -9,14 +9,22 @@ def validate_params():
         N = int(sys.argv[2])
         d = int(sys.argv[3])
         iter = 200 if len(sys.argv) == 5 else int(sys.argv[4])
-        if(iter <= 1 or iter >= 1000):
-            print("Invalid maximum iteration!")
-        if (K <= 1 or K >=N):
+        if (not isinstance(N, int) or N <= 0):
+            print("Invalid number of points!")
+            return
+        if (not isinstance(K, int) or K <= 1 or K >=N):
             print("Invalid number of clusters!")
+            return
+        if (not isinstance(d, int)):
+            print( "Invalid dimension of point!")
+            return
+        if (not isinstance(iter, int) or iter <= 1 or iter >= 1000):
+            print("Invalid maximum iteration!")
+            return
         filePath = sys.argv[5] if len(sys.argv) == 6 else sys.argv[4]
         return(K, N, d, iter, filePath)
     else:
-        return 1
+        return
 
 def distance(vector1, vector2, d):
     sum = 0
@@ -73,5 +81,6 @@ def main(K, N, d, iter, filePath):
         print(','.join([str(round(float(num), 4)) for num in item]))
 
 if __name__ == "__main__":
-    K, N, d, iter, filePath = validate_params()
-    main(K, N, d, iter, filePath)
+    (K, N, d, iter, filePath) = validate_params()
+    if(K == None):
+        main(K, N, d, iter, filePath)
