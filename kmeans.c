@@ -21,7 +21,8 @@ double** input_file_to_matrix(FILE* fp, int rows, int columns) {
   double **vectors;
   int line_count, tokensCounter;
   char line[MAX_LINE_LENGTH], *token;
-  
+  size_t len;
+
   vectors = (double**)calloc(rows, sizeof(double *));
   if (vectors == NULL) {
       printf("An Error Has Occurred");
@@ -29,8 +30,8 @@ double** input_file_to_matrix(FILE* fp, int rows, int columns) {
   }
 
   line_count = 0;
-
-  while (fgets(line, sizeof(line), fp) != NULL && line_count < rows) {
+  len = 0;
+  while (getline(&line, &len, fp) != -1 && line_count < rows) {
       line[strcspn(line, "\n")] = '\0';
 
       vectors[line_count] = calloc(columns, sizeof(double));
@@ -183,6 +184,18 @@ void print_output(double** centroids, int centroids_num, int centroid_size) {
   }
 }
 
+int isInteger(const char *str) {
+    if (*str == '\0')
+        return 0;
+
+    while (*str != '\0') {
+        if (!isdigit(*str))
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
 int main(int argc, char* argv[]) {
     int K, N, d, iter, i;
     double **vectors, **centroids;
@@ -192,6 +205,8 @@ int main(int argc, char* argv[]) {
       printf("An Error Has Occurred");
       exit(1);
     }
+
+    if (argc == 5)
 
     K = atoi(argv[1]);
     N = atoi(argv[2]);
