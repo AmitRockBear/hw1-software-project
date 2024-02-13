@@ -70,7 +70,6 @@ def main(K, N, d, iter, filePath):
 
     while(max_distance >= eps and iter_counter < iter):
         max_distance = 0
-        centroids_sum = []
         centroids_sum = [[0 for _ in range(d)] for _ in range(K)]
         counters = [0 for _ in range(K)]
         for i in range(N):
@@ -96,11 +95,14 @@ def main(K, N, d, iter, filePath):
         print(','.join([str(round(float(num), 4)) for num in item]))
 
 if __name__ == "__main__":
-    # try:
+    try:
         result = validate_params()
         if not result == None:
             K, N, d, iter, filePath = result
             main(K, N, d, iter, filePath)
-    # except ex:
-    #     print(ex)
+        else:
+            print("An Error Has Occurred")
+    except:
+         print("An Error Has Occurred")
+
 
