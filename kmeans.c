@@ -206,17 +206,6 @@ int main(int argc, char* argv[]) {
     }
 
     iter = 200;
-    if (argc == 5) {
-      if (isInteger(argv[4]) == 0) {
-        printf("Invalid maximum iteration!");
-        exit(1);
-      }
-      iter = atoi(argv[4]);
-      if (iter <= 1 || iter >= 1000) {
-        printf("Invalid maximum iteration!");
-        exit(1);
-      }
-    }
 
     if (isInteger(argv[2]) == 0) {
       printf("Invalid number of points!");
@@ -233,7 +222,7 @@ int main(int argc, char* argv[]) {
       exit(1);
     }
     K = atoi(argv[1]);
-    if (K <=1 || K >= N) {
+    if (K <= 1 || K >= N) {
       printf("Invalid number of clusters!");
       exit(1);
     }
@@ -246,6 +235,18 @@ int main(int argc, char* argv[]) {
     if (d < 1) {
       printf("Invalid dimension of point!");
       exit(1);
+    }
+
+    if (argc == 5) {
+      if (isInteger(argv[4]) == 0) {
+        printf("Invalid maximum iteration!");
+        exit(1);
+      }
+      iter = atoi(argv[4]);
+      if (iter <= 1 || iter >= 1000) {
+        printf("Invalid maximum iteration!");
+        exit(1);
+      }
     }
 
     vectors = stdin_to_matrix(N, d);
