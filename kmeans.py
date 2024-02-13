@@ -99,7 +99,7 @@ def main(K, N, d, iter, filePath):
         iter_counter += 1
 
     for item in centroids:
-        print(','.join([str(round(float(num), 4)) for num in item]))
+        print(','.join(["%.4f" % num for num in item]))
 
 if __name__ == "__main__":
     try:
