@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define eps 0.0001
+#include <ctype.h>
+#define eps 0.001
 #define MAX_LINE_LENGTH 1024
 
 double calculate_distance(double* vec1, double* vec2, int size) {
@@ -17,7 +18,7 @@ double calculate_distance(double* vec1, double* vec2, int size) {
   return sqrt(sum);
 }
 
-double** input_file_to_matrix(FILE* fp, int rows, int columns) {
+double** stdin_to_matrix(int rows, int columns) {
   double **vectors;
   int line_count, tokensCounter;
   char line[MAX_LINE_LENGTH], *token;
@@ -30,7 +31,7 @@ double** input_file_to_matrix(FILE* fp, int rows, int columns) {
 
   line_count = 0;
 
-  while (fgets(line, sizeof(line), fp) != NULL && line_count < rows) {
+  while (scanf("%s", line) == 1 && line_count < rows) {
       line[strcspn(line, "\n")] = '\0';
 
       vectors[line_count] = calloc(columns, sizeof(double));
@@ -183,48 +184,72 @@ void print_output(double** centroids, int centroids_num, int centroid_size) {
   }
 }
 
+int isInteger(const char *str) {
+    if (*str == '\0')
+        return 0;
+
+    while (*str != '\0') {
+        if (!isdigit(*str))
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
 int main(int argc, char* argv[]) {
     int K, N, d, iter, i;
     double **vectors, **centroids;
-    FILE *fp;
 
     if (argc != 4 && argc != 5) {
       printf("An Error Has Occurred");
       exit(1);
     }
 
-    K = atoi(argv[1]);
-    N = atoi(argv[2]);
-    d = atoi(argv[3]);
-    iter = argc == 5 ? atoi(argv[4]) : 200;
+    iter = 200;
 
-  	if (iter <= 1 || iter >= 1000) {
-      printf("Invalid maximum iteration!");
+    if (isInteger(argv[2]) == 0) {
+      printf("Invalid number of points!");
       exit(1);
     }
-
+    N = atoi(argv[2]);
     if (N <= 1) {
       printf("Invalid number of points!");
       exit(1);
     }
 
-    if (K <=1 || K >= N) {
+    if (isInteger(argv[1]) == 0) {
+      printf("Invalid number of clusters!");
+      exit(1);
+    }
+    K = atoi(argv[1]);
+    if (K <= 1 || K >= N) {
       printf("Invalid number of clusters!");
       exit(1);
     }
 
+    if (isInteger(argv[3]) == 0) {
+      printf("Invalid dimension of point!");
+      exit(1);
+    }
+    d = atoi(argv[3]);
     if (d < 1) {
       printf("Invalid dimension of point!");
       exit(1);
     }
 
-    fp = stdin;
-    if (fp == NULL) {
-      printf("An Error Has Occurred");
-      exit(1);
+    if (argc == 5) {
+      if (isInteger(argv[4]) == 0) {
+        printf("Invalid maximum iteration!");
+        exit(1);
+      }
+      iter = atoi(argv[4]);
+      if (iter <= 1 || iter >= 1000) {
+        printf("Invalid maximum iteration!");
+        exit(1);
+      }
     }
 
-    vectors = input_file_to_matrix(fp, N, d);
+    vectors = stdin_to_matrix(N, d);
     centroids = deep_copy_matrix(vectors, K, d);
 
     calculate_centroids_convergence(centroids, vectors, K, d, N, iter);
@@ -239,7 +264,6 @@ int main(int argc, char* argv[]) {
       free(centroids[i]);
     }
     free(centroids);
-    fclose(fp);
 
     return 0;
 }
