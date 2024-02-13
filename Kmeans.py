@@ -22,18 +22,25 @@ def validate_params():
         except ValueError:
             print("Invalid dimension of point!")
             return
+        
+        iter = 200 
+        if len(sys.argv) == 6:
+            try:
+                iter = int(sys.argv[4])
+            except:
+                print("Invalid maximum iteration!")
 
-        iter = 200 if len(sys.argv) == 5 else int(sys.argv[4])
-        if (not isinstance(N, int) or N <= 1):
+                
+        if (N <= 1):
             print("Invalid number of points!")
             return
-        if (not isinstance(K, int) or K <= 1 or K >=N):
+        if (K <= 1 or K >=N):
             print("Invalid number of clusters!")
             return
-        if (not isinstance(d, int) or d < 1):
+        if (d < 1):
             print("Invalid dimension of point!")
             return
-        if (not isinstance(iter, int) or iter <= 1 or iter >= 1000):
+        if (iter <= 1 or iter >= 1000):
             print("Invalid maximum iteration!")
             return
         filePath = sys.argv[5] if len(sys.argv) == 6 else sys.argv[4]
@@ -100,8 +107,6 @@ if __name__ == "__main__":
         if not result == None:
             K, N, d, iter, filePath = result
             main(K, N, d, iter, filePath)
-        else:
-            print("An Error Has Occurred")
     except:
          print("An Error Has Occurred")
 
