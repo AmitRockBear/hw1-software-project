@@ -47,7 +47,6 @@ def validate_params():
         filePath = sys.argv[5] if len(sys.argv) == 6 else sys.argv[4]
         pathExt = os.path.splitext(filePath)
         if pathExt[1] != ".txt":
-            print("An Error Has Occurred")
             return
         return(K, N, d, iter, filePath)
     else:
