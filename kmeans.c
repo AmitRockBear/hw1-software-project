@@ -45,17 +45,18 @@ double** stdin_to_matrix(int rows, int columns) {
       start_iterator = line;
       end_iterator = line;
       d_counter = 0;
-      while (*end_iterator != '\n') {
-        while(*end_iterator != ',' && *end_iterator != '\n') {
+      while(*end_iterator != '\n' && *end_iterator != '\0') {
+        while(*end_iterator != ',' && *end_iterator != '\n' && *end_iterator != '\0') {
           end_iterator++;
         }
-        vectors[line_count][d_counter] = strtod(start_iterator, &end_iterator);
-        end_iterator++;
-        start_iterator = end_iterator;
+        vectors[line_count][d_counter] = strtod(start_iterator, NULL);
+        if (*end_iterator != '\n' && *end_iterator != '\0') {
+          end_iterator++;
+          start_iterator = end_iterator;
+        }
         d_counter++;
       }
-      free(start_iterator);
-      free(end_iterator);
+
       line_count++;
   }
 
