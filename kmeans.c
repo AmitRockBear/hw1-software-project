@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
-#include <ctype.h>
 #define eps 0.001
 #define MAX_LINE_LENGTH 1024
 
@@ -28,8 +26,8 @@ double calculate_distance(double* vec1, double* vec2, int size) {
 
 double** stdin_to_matrix(int rows, int columns) {
   double **vectors;
-  int line_count, tokensCounter;
-  char line[MAX_LINE_LENGTH], *token;
+  int line_count, d_counter;
+  char line[MAX_LINE_LENGTH], *start_iterator, *end_iterator;
   
   vectors = (double**)calloc(rows, sizeof(double *));
   if (vectors == NULL) {
@@ -37,24 +35,27 @@ double** stdin_to_matrix(int rows, int columns) {
   }
 
   line_count = 0;
-
   while (scanf("%s", line) == 1 && line_count < rows) {
-      line[strcspn(line, "\n")] = '\0';
-
       vectors[line_count] = calloc(columns, sizeof(double));
       if (vectors[line_count] == NULL) {
         free_array_of_pointers(vectors, line_count);
         return NULL;
       }
 
-      token = strtok(line, ",");
-      tokensCounter = 0;      
-      while (token != NULL) {
-          vectors[line_count][tokensCounter] = strtod(token, NULL);
-          
-          token = strtok(NULL, ",");
-          tokensCounter++;
+      start_iterator = line;
+      end_iterator = line;
+      d_counter = 0;
+      while (*end_iterator != '\n') {
+        while(*end_iterator != ',' && *end_iterator != '\n') {
+          end_iterator++;
+        }
+        vectors[line_count][d_counter] = strtod(start_iterator, &end_iterator);
+        end_iterator++;
+        start_iterator = end_iterator;
+        d_counter++;
       }
+      free(start_iterator);
+      free(end_iterator);
       line_count++;
   }
 
@@ -203,7 +204,7 @@ int isInteger(const char *str) {
         return 0;
 
     while (*str != '\0') {
-        if (!isdigit(*str))
+        if (!('0' <= *str && *str <= '9'))
             return 0;
         str++;
     }
