@@ -6,6 +6,14 @@
 #define eps 0.001
 #define MAX_LINE_LENGTH 1024
 
+void free_array_of_pointers(double** arr, int length) {
+  int i;
+  for (i=0; i<length; i++) {
+    free(arr[i]);
+  }
+  free(arr);
+}
+
 double calculate_distance(double* vec1, double* vec2, int size) {
   int i;
   double sum;
@@ -25,8 +33,7 @@ double** stdin_to_matrix(int rows, int columns) {
   
   vectors = (double**)calloc(rows, sizeof(double *));
   if (vectors == NULL) {
-      printf("An Error Has Occurred");
-      exit(1);
+      return NULL;
   }
 
   line_count = 0;
@@ -36,8 +43,8 @@ double** stdin_to_matrix(int rows, int columns) {
 
       vectors[line_count] = calloc(columns, sizeof(double));
       if (vectors[line_count] == NULL) {
-        printf("An Error Has Occurred");
-        exit(1);
+        free_array_of_pointers(vectors, line_count);
+        return NULL;
       }
 
       token = strtok(line, ",");
@@ -60,15 +67,14 @@ double** deep_copy_matrix(double** copied_matrix, int rows, int columns) {
 
   new_matrix = calloc((size_t)rows, sizeof(double *));
   if (new_matrix == NULL) {
-      printf("An Error Has Occurred");
-      exit(1);
+      return NULL;
   }
 
   for (i=0; i<rows; i++) {
       new_matrix[i] = calloc(columns, sizeof(double));
       if (new_matrix[i] == NULL) {
-        printf("An Error Has Occurred");
-        exit(1);
+        free_array_of_pointers(new_matrix, i);
+        return NULL;
       }
 
       for (j=0; j<columns; j++) {
@@ -103,8 +109,7 @@ double* create_new_centroid(double* centroid_sum, int centroid_counter, int cent
 
   new_centroid = calloc(centroid_size, sizeof(double));
   if (new_centroid == NULL) {
-      printf("An Error Has Occurred");
-      exit(1);
+      return NULL;
   }
 
   for (p=0; p<centroid_size; p++) {
@@ -114,7 +119,7 @@ double* create_new_centroid(double* centroid_sum, int centroid_counter, int cent
   return new_centroid;
 }
 
-void calculate_centroids_convergence(double** centroids, double** vectors, int centroids_num, int centroid_size, int vectors_num, int max_iterations) {
+int calculate_centroids_convergence(double** centroids, double** vectors, int centroids_num, int centroid_size, int vectors_num, int max_iterations) {
   int iter_couter, closest_centroid_index, i, j, p;
   double max_distance, centroids_distance, **centroids_sum, *counters, *new_centroid_j;
   max_distance = eps + 1;
@@ -124,21 +129,21 @@ void calculate_centroids_convergence(double** centroids, double** vectors, int c
     max_distance = 0;
     centroids_sum = (double**)calloc(centroids_num, sizeof(double *));
     if (centroids_sum == NULL) {
-      printf("An Error Has Occurred");
-      exit(1);
+      return 1;
     }
     counters = (double*)calloc(centroids_num, sizeof(double));
     if (counters == NULL) {
-      printf("An Error Has Occurred");
-      exit(1);
+      free(centroids_sum);
+      return 1;
     }
 
     for (j=0; j<centroids_num; j++) {
       centroids_sum[j] = calloc(centroid_size, sizeof(double));
 
       if (centroids_sum[j] == NULL) {
-        printf("An Error Has Occurred");
-        exit(1);
+        free_array_of_pointers(centroids_sum, j);
+        free(counters);
+        return 1;
       }
     }
 
@@ -154,6 +159,13 @@ void calculate_centroids_convergence(double** centroids, double** vectors, int c
     for (j=0; j<centroids_num; j++) {
       if (counters[j] > 0) {
         new_centroid_j = create_new_centroid(centroids_sum[j], counters[j], centroid_size);
+
+        if (new_centroid_j == NULL) {
+          free_array_of_pointers(centroids_sum, centroids_num);
+          free(counters);
+          return 1;
+        }
+        
         centroids_distance = calculate_distance(centroids[j], new_centroid_j, centroid_size);
         if (centroids_distance > max_distance) {
           max_distance = centroids_distance;
@@ -163,11 +175,13 @@ void calculate_centroids_convergence(double** centroids, double** vectors, int c
       }
     }
 
-    free(centroids_sum);
-    free(counters);
+        free_array_of_pointers(centroids_sum, centroids_num);
+        free(counters);
 
     iter_couter++;
   }
+
+  return 0;
 }
 
 void print_output(double** centroids, int centroids_num, int centroid_size) {
@@ -197,73 +211,83 @@ int isInteger(const char *str) {
 }
 
 int main(int argc, char* argv[]) {
-    int K, N, d, iter, i;
+    int K, N, d, iter, res;
     double **vectors, **centroids;
 
     if (argc != 4 && argc != 5) {
       printf("An Error Has Occurred");
-      exit(1);
+      return 1;
     }
 
     iter = 200;
 
     if (isInteger(argv[2]) == 0) {
       printf("Invalid number of points!");
-      exit(1);
+      return 1;
     }
     N = atoi(argv[2]);
     if (N <= 1) {
       printf("Invalid number of points!");
-      exit(1);
+      return 1;
     }
 
     if (isInteger(argv[1]) == 0) {
       printf("Invalid number of clusters!");
-      exit(1);
+      return 1;
     }
     K = atoi(argv[1]);
     if (K <= 1 || K >= N) {
       printf("Invalid number of clusters!");
-      exit(1);
+      return 1;
     }
 
     if (isInteger(argv[3]) == 0) {
       printf("Invalid dimension of point!");
-      exit(1);
+      return 1;
     }
     d = atoi(argv[3]);
     if (d < 1) {
       printf("Invalid dimension of point!");
-      exit(1);
+      return 1;
     }
 
     if (argc == 5) {
       if (isInteger(argv[4]) == 0) {
         printf("Invalid maximum iteration!");
-        exit(1);
+        return 1;
       }
       iter = atoi(argv[4]);
       if (iter <= 1 || iter >= 1000) {
         printf("Invalid maximum iteration!");
-        exit(1);
+        return 1;
       }
     }
 
     vectors = stdin_to_matrix(N, d);
-    centroids = deep_copy_matrix(vectors, K, d);
+    if (vectors == NULL) {
+      printf("An Error Has Occurred");
+      return 1;
+    }
 
-    calculate_centroids_convergence(centroids, vectors, K, d, N, iter);
+    centroids = deep_copy_matrix(vectors, K, d);
+    if (centroids == NULL) {
+      free_array_of_pointers(vectors, N);
+      printf("An Error Has Occurred");
+      return 1;
+    }
+
+    res = calculate_centroids_convergence(centroids, vectors, K, d, N, iter);
+    if (res == 1) {
+      free_array_of_pointers(vectors, N);
+      free_array_of_pointers(centroids, K);
+      printf("An Error Has Occurred");
+      return 1;
+    }
 
     print_output(centroids, K, d);
 
-    for (i=0; i<N; i++) {
-        free(vectors[i]);
-    }
-    free(vectors);
-    for (i=0; i<K; i++) {
-      free(centroids[i]);
-    }
-    free(centroids);
+    free_array_of_pointers(vectors, N);
+    free_array_of_pointers(centroids, K);
 
     return 0;
 }
