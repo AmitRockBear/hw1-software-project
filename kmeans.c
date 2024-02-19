@@ -1,8 +1,9 @@
+
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #define eps 0.001
-#define MAX_LINE_LENGTH 1024
 
 void free_array_of_pointers(double** arr, int length) {
   int i;
@@ -27,15 +28,18 @@ double calculate_distance(double* vec1, double* vec2, int size) {
 double** stdin_to_matrix(int rows, int columns) {
   double **vectors;
   int line_count, d_counter;
-  char line[MAX_LINE_LENGTH], *start_iterator, *end_iterator;
+  char *line, *start_iterator, *end_iterator;
+  size_t len;
   
   vectors = (double**)calloc(rows, sizeof(double *));
   if (vectors == NULL) {
       return NULL;
   }
 
+  len = 0;
+  line = NULL;
   line_count = 0;
-  while (scanf("%s", line) == 1 && line_count < rows) {
+  while (getline(&line, &len, stdin) != -1 && line_count < rows) {
       vectors[line_count] = calloc(columns, sizeof(double));
       if (vectors[line_count] == NULL) {
         free_array_of_pointers(vectors, line_count);
