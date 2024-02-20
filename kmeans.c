@@ -43,6 +43,7 @@ double** stdin_to_matrix(int rows, int columns) {
       vectors[line_count] = calloc(columns, sizeof(double));
       if (vectors[line_count] == NULL) {
         free_array_of_pointers(vectors, line_count);
+        free(line);
         return NULL;
       }
 
@@ -62,9 +63,8 @@ double** stdin_to_matrix(int rows, int columns) {
       }
 
       line_count++;
+      free(line);
   }
-
-  free(line);
 
   return vectors;
 }
