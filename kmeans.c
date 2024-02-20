@@ -63,8 +63,9 @@ double** stdin_to_matrix(int rows, int columns) {
       }
 
       line_count++;
-      free(line);
   }
+
+  free(line);
 
   return vectors;
 }
