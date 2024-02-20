@@ -183,8 +183,8 @@ int calculate_centroids_convergence(double** centroids, double** vectors, int ce
       }
     }
 
-        free_array_of_pointers(centroids_sum, centroids_num);
-        free(counters);
+    free_array_of_pointers(centroids_sum, centroids_num);
+    free(counters);
 
     iter_couter++;
   }
