@@ -30,6 +30,7 @@ def validate_params():
                 iter = int(sys.argv[4])
             except:
                 print("Invalid maximum iteration!")
+                return
 
                 
         if (N <= 1):
@@ -50,7 +51,7 @@ def validate_params():
             return
         return(K, N, d, iter, filePath)
     else:
-        return
+        raise
 
 def distance(vector1, vector2, d):
     sum = 0
